@@ -1,0 +1,111 @@
+/*
+ * Obsidian PDF Export — A4 Clean Page Breaks — v2
+ *
+ * Rules:
+ * - Natural page breaks at A4 boundaries (no forced breaks at headings)
+ * - Headings never stranded at bottom of page (widow protection)
+ * - Paragraphs that would end near the bottom move to the next page instead
+ * - Code blocks, tables, images, and callouts never split across pages
+ * - hr elements converted to explicit page breaks
+ * - Manual page break: type > [!pagebreak] anywhere in your note
+ *   - Invisible in reading view, forces a page break in PDF export
+ *   - Can be used as many times as needed
+ *   - All clean-break rules apply from that point forward
+ */
+
+@page {
+    size: A4;
+    margin: 20mm;
+}
+
+/* ── Manual page break callout ─────────────────────────────────────────────
+ *  Usage: > [!pagebreak]
+ *  Renders invisibly in Obsidian reading view.
+ *  Forces a clean page break in PDF export.
+ *  Can be used as many times as needed throughout the document.              */
+.callout[data-callout="pagebreak"] {
+    display: none;
+}
+
+@media print {
+
+    /* Re-declare for print context and convert to page break */
+    .callout[data-callout="pagebreak"] {
+        display: block;
+        visibility: hidden;
+        height: 0;
+        margin: 0;
+        padding: 0;
+        break-before: page;
+    }
+
+    /* ── Widow & orphan protection ─────────────────────────────────────────
+     *    orphans: minimum lines of a paragraph left at the bottom of a page
+     *    widows:  minimum lines of a paragraph carried to the top of a page
+     *    Setting both to a high value pushes short paragraph tails to move
+     *    the whole paragraph forward rather than split it.                    */
+    p {
+        orphans: 4;
+        widows: 4;
+    }
+
+    /* ── Headings: never stranded at the bottom ────────────────────────────
+     *    break-after: avoid keeps the heading glued to whatever follows it.
+     *    break-inside: avoid stops a heading itself from splitting (edge case). */
+    h1, h2, h3, h4, h5, h6 {
+        break-after: avoid;
+        break-inside: avoid;
+    }
+
+    /* ── Keep adjacent headings together ──────────────────────────────────
+     *    Prevents a break between a heading and an immediately following
+     *    subheading (e.g. h2 followed by h3).                                */
+    div:has(h1)+div:has(h2) h2,
+    div:has(h2)+div:has(h3) h3,
+    div:has(h3)+div:has(h4) h4,
+    div:has(h4)+div:has(h5) h5,
+    div:has(h5)+div:has(h6) h6 {
+        break-before: avoid;
+    }
+
+    /* ── Code blocks: never split ──────────────────────────────────────────
+     *    break-inside: avoid keeps the whole block on one page.
+     *    If a block is genuinely longer than one page this has no effect —
+     *    there is no CSS-only way to scale it down, but in practice short
+     *    blocks will always be kept whole.                                    */
+    pre, code {
+        break-inside: avoid;
+    }
+
+    /* ── Tables: never split ───────────────────────────────────────────────*/
+    table {
+        break-inside: avoid;
+    }
+
+    /* ── Images: never split ───────────────────────────────────────────────*/
+    img {
+        break-inside: avoid;
+        break-after: avoid;
+    }
+
+    /* ── Callout blocks: never split ───────────────────────────────────────
+     *    Obsidian renders callouts as blockquotes. This keeps the entire
+     *    callout on one page. The pagebreak callout is excluded since it
+     *    is intentionally a break point.                                      */
+    blockquote:not([data-callout="pagebreak"]) {
+        break-inside: avoid;
+    }
+
+    /* ── hr → explicit page break ──────────────────────────────────────────
+     *    Preserves compatibility with any manual hr page breaks in your notes. */
+    hr {
+        visibility: hidden;
+        break-before: page;
+    }
+
+    /* ── White background for clean export ────────────────────────────────*/
+    body {
+        background-color: white;
+    }
+
+}
