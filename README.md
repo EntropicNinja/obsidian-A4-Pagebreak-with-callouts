@@ -10,11 +10,10 @@
 - hr elements converted to explicit page breaks
 
 > [!Note]
-> Originally found [obsidian-pagebreak](https://gist.github.com/liamcain/81679412643690a7cdd13dff4dc909ce) but then noted that it was updated by [robotii](https://gist.github.com/robotii/aa580b1c00937d37c44f1033034b0e1a) to:
-> > [!Quote] Properly select the first h1 and remove page break before it.
-> > [!Quote] Added support to not split adjacent headings.
-> > [!Quote] Change background colour to white for better PDF generation.
->
+> Originally found [obsidian-pagebreak](https://gist.github.com/liamcain/81679412643690a7cdd13dff4dc909ce) but then noted that it was updated by [robotii](https://gist.github.com/robotii/aa580b1c00937d37c44f1033034b0e1a) to:  
+> - Properly select the first h1 and remove page break before it.
+> - Added support to not split adjacent headings.
+> - Change background colour to white for better PDF generation.
 
 I wanted the snippet to respect A4 boundries and to not cut things like codeblocks or callouts in half, or have a Heading at the bottom of a page with only 2-4 lines of text.
 I also wanted to have a way for the user to manually add a page break but that it still respect the above stipulations.
